@@ -1,7 +1,8 @@
 const express = require('express'); 
 const app = express();
 const admin = require("firebase-admin");
-const credentials = require("C:\\Users\\GT\\Desktop\\RMT\\firebaseservice.json");
+//const credentials = require("C:\\Users\\GT\\Desktop\\RMT\\firebaseservice.json");
+const credentials = require("C:\\Users\\97155\\Desktop\\RMTHAMZACODE\\Draft one\\Firebase-authentication-Express.js-main\\firebaseservice.json");
 
 admin.initializeApp({
     credential: admin.credential.cert(credentials)
@@ -38,6 +39,6 @@ app.post('/signup', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(3000, () => {
     console.log(`App listening on port ${PORT}`);
 });
