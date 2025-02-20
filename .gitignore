@@ -1,8 +1,11 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
+/node_modules
+.env
+
+rmts-web/firebaseservice.json
+
+
+package-lock.json
+
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
