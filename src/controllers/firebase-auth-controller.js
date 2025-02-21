@@ -7,32 +7,53 @@ const {
   sendPasswordResetEmail
  } = require('../config/firebase');
 const auth = getAuth();
+const { getFirestore, doc, setDoc } = require("firebase/firestore");
+const db = getFirestore();
 
 class FirebaseAuthController {
   registerUser(req, res) {
-    const { email, password } = req.body;
-    if (!email || !password) {
+    const { email, password, role, licenseNumber, gender, patientid } = req.body; // Extract all fields
+  
+    if (!email || !password || !role || !licenseNumber || !gender || !patientid) {
       return res.status(422).json({
         email: "Email is required",
         password: "Password is required",
+        licenseNumber: "License Number is required",
+        gender: "Gender is required",
+        patientid: "Patient ID is required",
+        role: "Role is required"
       });
     }
+  
     createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        sendEmailVerification(auth.currentUser)
-          .then(() => {
-            res.status(201).json({ message: "Verification email sent! User created successfully!" });
-          })
-          .catch((error) => {
-            console.error(error);
-            res.status(500).json({ error: "Error sending email verification" });
+      .then(async (userCredential) => {
+        try {
+          // Save user info in Firestore
+          const userRef = doc(db, "doctors", userCredential.user.uid);
+          await setDoc(userRef, {
+            email: email,
+            createdAt: new Date(),
+            role: role,
+            licenseNumber: licenseNumber,
+            gender: gender,
+            patientid: patientid,
           });
+  
+          // Send verification email
+          await sendEmailVerification(auth.currentUser);
+          res.status(201).json({ message: "Verification email sent! User created successfully!" });
+  
+        } catch (error) {
+          console.error(error);
+          res.status(500).json({ error: "Error saving user data in Firestore" });
+        }
       })
       .catch((error) => {
-        const errorMessage = error.message || "An error occurred while registering user";
-        res.status(500).json({ error: errorMessage });
+        console.error(error);
+        res.status(500).json({ error: error.message || "Registration failed" });
       });
   }
+
 
   loginUser(req, res) {
     const { email, password } = req.body;
