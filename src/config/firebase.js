@@ -11,7 +11,10 @@ const {
 
 
 // Use require to load the service account JSON file
-const serviceAccount = require("C:\\Users\\GT\\Desktop\\rmts-web\\firebaseservice.json"); // Update with the correct path to your firebaseservice.json file
+//hamza
+//const serviceAccount = require("C:\\Users\\GT\\Desktop\\rmts-web\\firebaseservice.json"); // Update with the correct path to your firebaseservice.json file
+//ahmed
+const serviceAccount = require("C:\\Users\\97155\\Desktop\\RMTHAMZACODE\\Draft one\\Firebase-authentication-Express.js-main\\firebaseservice.json"); // Update with the correct path to your firebaseservice.json file
 
 // Initialize Firebase Admin SDK
 admin.initializeApp({
