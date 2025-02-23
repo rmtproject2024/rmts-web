@@ -1,5 +1,5 @@
 class User {
-    constructor({ uid, fullName, age, nationality, birthDate, gender, email, phonenumber, role, verfied }) {
+    constructor({ uid, fullName, age, nationality, birthDate, gender, email, phonenumber, role }) {
         this.uid = uid;
         this.fullName = fullName;
         this.age = age;
@@ -9,7 +9,6 @@ class User {
         this.role = role; // Could be "patient", "doctor", etc.
         this.email = email;
         this.phonenumber = phonenumber;
-        this.verfied = verfied;
     }
 
     toFirestore() {
@@ -21,7 +20,6 @@ class User {
             gender: this.gender,
             role: this.role,
             phonenumber: this.phonenumber,
-            verifed: this.verfied,
             email: this.email,
             createdAt: new Date().getUTCDate()
         };

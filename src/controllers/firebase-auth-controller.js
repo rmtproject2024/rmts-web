@@ -14,34 +14,57 @@ const Doctor = require("../models/Doctor/doctor");
 
 class FirebaseAuthController {
   async registerUser(req, res) {
-    console.log(req.body);
-    const { email, password, role, licenseNumber, gender,age,nationality,fullName,birthDate,phonenumber,verfied,description,nationalId,patientIds} = req.body; // Extract all fields
+    try {
+      // 1. Extract the common fields from request body
+      const {
+        email,
+        password,
+        role,
+        gender,
+        age,
+        nationality,
+        fullName,
+        birthDate,
+        phonenumber,
+        // Doctor-only fields (may be missing if user is not a doctor)
+        licenseNumber,
+        description,
+        nationalId
+      } = req.body;
   
-    if (!email || !password || !role  || !gender || !age || !nationality || !fullName || !birthDate || !phonenumber || !verfied ) {
-      return res.status(422).json({
-        email: "Email is required",
-        password: "Password is required",
-        fullName: "name and surname",
-        nationality: "nationality",
-        gender: "Gender is required",
-        age: "Age",
-        birthDate: "birthdate: daymonthyear",
-        phonenumber: "phone number",
-        role: "Role is required"
-      });
-    }
-    if(role.toLowerCase() === "doctor" && !licenseNumber) {
-      return res.status(422).json({
-        licenseNumber: "License Number is required",
-        description: "Description is required",
-        nationalId: "nationalID is required",
-        patientIds: "ssdsd"
-      });
-      
-    }
-
-    const user = new User({
-      uid,
+      // 2. Validate the universal fields (for all roles)
+      if (
+        !email ||
+        !password ||
+        !role ||
+        !gender ||
+        !age ||
+        !nationality ||
+        !fullName ||
+        !birthDate ||
+        !phonenumber 
+      ) {
+        return res.status(422).json({
+          error: "Some required fields are missing for basic user registration."
+        });
+      }
+  
+      // 3. If role is "doctor", validate doctor-specific fields
+      if (role.toLowerCase() === "doctor") {
+        if (!licenseNumber || !description || !nationalId) {
+          return res.status(422).json({
+            error: "Missing doctor-specific fields: licenseNumber, description, nationalId."
+          });
+        }
+      }
+  
+      // 4. Create user in Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const uid = userCredential.user.uid;
+  
+      // 5. Create the user doc in Firestore
+      const userData = new User({
+        uid,
         fullName,
         email,
         age,
@@ -50,34 +73,34 @@ class FirebaseAuthController {
         gender,
         role,
         phonenumber,
-        verfied,
-    });
     
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    
-    const uid = userCredential.user.uid;
-      
-    
-    const doctor = new Doctor({
-      uid,
-      licenseNumber,
-      description,
-      nationalId,
-      patientIds:null,
-
-    });
-    await setDoc(doc(db,"users",uid),user.toFirestore());
-    await setDoc(doc(db,"doctors",uid),doctor.toFirestore());
-    
+      });
+      await setDoc(doc(db, "users", uid), userData.toFirestore());
   
+      // 6. If role is doctor, also create doc in "doctors" collection
+      if (role.toLowerCase() === "doctor") {
+        const doctorData = new Doctor({
+          uid,
+          licenseNumber,
+          description,
+          nationalId,
+          patientIds: []
+        });
+        await setDoc(doc(db, "doctors", uid), doctorData.toFirestore());
+      }
+  
+      // 7. Optionally send email verification
       if (auth.currentUser) {
-              await sendEmailVerification(auth.currentUser);
-            }
-      
-            // 7) Respond
-            res.status(201).json({ message: "user/doctor created successfully", uid });
-          } 
-        
+        await sendEmailVerification(auth.currentUser);
+      }
+  
+      // 8. Respond
+      res.status(201).json({ message: "User created successfully", uid });
+    } catch (error) {
+      console.error("Error registering user:", error);
+      res.status(500).json({ error: error.message });
+    }
+  }
   
         
   
