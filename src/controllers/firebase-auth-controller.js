@@ -7,52 +7,81 @@ const {
   sendPasswordResetEmail
  } = require('../config/firebase');
 const auth = getAuth();
-const { getFirestore, doc, setDoc } = require("firebase/firestore");
+const { getFirestore, doc, setDoc, and } = require("firebase/firestore");
 const db = getFirestore();
+const User = require("../models/user/user");
+const Doctor = require("../models/Doctor/doctor");
 
 class FirebaseAuthController {
-  registerUser(req, res) {
-    const { email, password, role, licenseNumber, gender, patientid } = req.body; // Extract all fields
+  async registerUser(req, res) {
+    console.log(req.body);
+    const { email, password, role, licenseNumber, gender,age,nationality,fullName,birthDate,phonenumber,verfied,description,nationalId,patientIds} = req.body; // Extract all fields
   
-    if (!email || !password || !role || !licenseNumber || !gender || !patientid) {
+    if (!email || !password || !role  || !gender || !age || !nationality || !fullName || !birthDate || !phonenumber || !verfied ) {
       return res.status(422).json({
         email: "Email is required",
         password: "Password is required",
-        licenseNumber: "License Number is required",
+        fullName: "name and surname",
+        nationality: "nationality",
         gender: "Gender is required",
-        patientid: "Patient ID is required",
+        age: "Age",
+        birthDate: "birthdate: daymonthyear",
+        phonenumber: "phone number",
         role: "Role is required"
       });
     }
-  
-    createUserWithEmailAndPassword(auth, email, password)
-      .then(async (userCredential) => {
-        try {
-          // Save user info in Firestore
-          const userRef = doc(db, "doctors", userCredential.user.uid);
-          await setDoc(userRef, {
-            email: email,
-            createdAt: new Date(),
-            role: role,
-            licenseNumber: licenseNumber,
-            gender: gender,
-            patientid: patientid,
-          });
-  
-          // Send verification email
-          await sendEmailVerification(auth.currentUser);
-          res.status(201).json({ message: "Verification email sent! User created successfully!" });
-  
-        } catch (error) {
-          console.error(error);
-          res.status(500).json({ error: "Error saving user data in Firestore" });
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        res.status(500).json({ error: error.message || "Registration failed" });
+    if(role.toLowerCase() === "doctor" && !licenseNumber) {
+      return res.status(422).json({
+        licenseNumber: "License Number is required",
+        description: "Description is required",
+        nationalId: "nationalID is required",
+        patientIds: "ssdsd"
       });
-  }
+      
+    }
+
+    const user = new User({
+      uid,
+        fullName,
+        email,
+        age,
+        nationality,
+        birthDate,
+        gender,
+        role,
+        phonenumber,
+        verfied,
+    });
+    
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    
+    const uid = userCredential.user.uid;
+      
+    
+    const doctor = new Doctor({
+      uid,
+      licenseNumber,
+      description,
+      nationalId,
+      patientIds:null,
+
+    });
+    await setDoc(doc(db,"users",uid),user.toFirestore());
+    await setDoc(doc(db,"doctors",uid),doctor.toFirestore());
+    
+  
+      if (auth.currentUser) {
+              await sendEmailVerification(auth.currentUser);
+            }
+      
+            // 7) Respond
+            res.status(201).json({ message: "user/doctor created successfully", uid });
+          } 
+        
+  
+        
+  
+    
 
 
   loginUser(req, res) {
@@ -63,14 +92,20 @@ class FirebaseAuthController {
             password: "Password is required",
         });
     }
+  
     signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => { 
+          console.log(userCredential);
           const idToken = userCredential._tokenResponse.idToken
             if (idToken) {
                 res.cookie('access_token', idToken, {
                     httpOnly: true
                 });
-                res.status(200).json({ message: "User logged in successfully", userCredential });
+                res.cookie('uid', userCredential.user.uid, {
+                    httpOnly: true
+                });
+                const uu = req.cookies.uid;
+                res.status(200).json({ message: "User logged in successfully", uu });
             } else {
                 res.status(500).json({ error: "Internal Server Error" });
             }
@@ -83,6 +118,8 @@ class FirebaseAuthController {
   }
 
   logoutUser(req, res) {
+    const uu = req.cookies.uid;
+    console.log(uu);
     signOut(auth)
       .then(() => {
         res.clearCookie('access_token');
@@ -111,7 +148,6 @@ class FirebaseAuthController {
         res.status(500).json({ error: "Internal Server Error" });
       });
   }
-
 }
 
 module.exports = new FirebaseAuthController();

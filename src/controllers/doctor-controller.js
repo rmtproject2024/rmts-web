@@ -28,7 +28,8 @@ class DoctorController {
         phonenumber, 
         verfied, 
         gloveId,  
-        emergencyContact
+        emergencyContact,
+        prescrptionId,
       } = req.body;
 
       // 1) Create a user with the client SDK
@@ -51,13 +52,15 @@ class DoctorController {
         verfied,
       });
 
-      // 4) Build a Patient object (from your custom model)
+      const idToken = req.cookies.uid;
+
+      // 4) Buil a Patient object (from your custom model)
       const patient = new Patient({
         uid,
         gloveId,
-        doctorId: 2213, // example
+        doctorId: idToken, // example
         emergencyContact,
-        prescrptionId: 153 // example
+        prescrptionId, // example
       });
 
       // 5) Save to Firestore (using client Firestore in this example)

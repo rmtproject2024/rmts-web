@@ -7,9 +7,9 @@ class User {
         this.birthDate = birthDate;
         this.gender = gender;
         this.role = role; // Could be "patient", "doctor", etc.
-        this.email = email,
-        this.phonenumber = phonenumber,
-        this.verfied = verfied
+        this.email = email;
+        this.phonenumber = phonenumber;
+        this.verfied = verfied;
     }
 
     toFirestore() {
