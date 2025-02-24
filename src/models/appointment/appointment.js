@@ -3,7 +3,8 @@ const { documentId } = require("firebase/firestore");
 class Appointment {
     constructor({appointmentID,uid,doctorId,patientIds,dateTime, status, Notes }) {
       this.appointmentID = appointmentID; // Foreign Key (User ID)
-      this.patientIds = patientIds;
+      this.patientI= patientId;
+      this.doctorId = doctorId;
       this.uid = uid;
       this.Notes = Notes;
       this.dateTime = dateTime;

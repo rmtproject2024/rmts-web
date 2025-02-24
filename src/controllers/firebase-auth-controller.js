@@ -7,7 +7,7 @@ const {
   sendPasswordResetEmail
  } = require('../config/firebase');
 const auth = getAuth();
-const { getFirestore, doc, setDoc, and } = require("firebase/firestore");
+const { getFirestore, doc, setDoc } = require("firebase/firestore");
 const db = getFirestore();
 const User = require("../models/user/user");
 const Doctor = require("../models/Doctor/doctor");
@@ -101,11 +101,6 @@ class FirebaseAuthController {
       res.status(500).json({ error: error.message });
     }
   }
-  
-        
-  
-    
-
 
   loginUser(req, res) {
     const { email, password } = req.body;

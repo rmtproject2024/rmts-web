@@ -1,6 +1,6 @@
 class Patient {
     constructor({ patientId,uid, gloveId, doctorId, emergencyContact,prescrptionId }) {
-        this.patientId = patientId;
+        this.patientId = uid;
         this.uid = uid; // Foreign Key (User ID)
         this.gloveId = gloveId;
         this.doctorId = doctorId, //Foreign Key(Doctor table)
