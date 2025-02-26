@@ -1,6 +1,5 @@
 class Glove {
-    constructor({ gloveId,LastClabrated, lastSynced,lastUpdated,model,productionDate,status,version,patientID }) {
-        this.gloveId = gloveId;
+    constructor({ LastClabrated, lastSynced,lastUpdated,model,productionDate,status,version,patientID }) {
         this.LastClabrated = LastClabrated;
         this.lastSynced = lastSynced;
         this.lastUpdated = lastUpdated;
@@ -17,7 +16,6 @@ class Glove {
             lastCalibrated: this.LastClabrated,
             lastSynced: this.lastSynced,
             lastUpdated: this.lastUpdated,
-            model: this.model,
             patientId: this.patientID,
             productionDate: this.productionDate,
             status:this.status,

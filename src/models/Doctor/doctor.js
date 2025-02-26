@@ -1,21 +1,23 @@
 class Doctor {
-    constructor({ uid, patientIds, description, licenseNumber, nationalId }) {
+    constructor({ uid, patientId,createdAt,description, licenseNumber, nationalId }) {
       this.uid = uid; // Foreign Key (User ID)
       this.licenseNumber = licenseNumber;
-      this.patientIds = patientIds;
+      this.patientId = patientId;
       this.description = description;
       this.nationalId = nationalId;
       this.doctorId = uid; // if you really want a separate "doctorId" field
+      this.createdAt = createdAt;
     }
   
     toFirestore() {
       return {
         uid: this.uid,
         licenseNumber: this.licenseNumber,
-        patientIds: this.patientIds,   // changed patientID -> patientIds
+        patientId: this.patientId,       // changed patientID -> patientIds
         nationalId: this.nationalId,   // changed nationalID -> nationalId
         description: this.description,
-        doctorId: this.doctorId        // optional if you want to store "doctorId"
+        doctorId: this.doctorId,        // optional if you want to store "doctorId"
+        createdAt: new Date(),
       };
     }
   }
