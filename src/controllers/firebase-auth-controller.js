@@ -7,10 +7,12 @@ const {
   sendPasswordResetEmail
  } = require('../config/firebase');
 const auth = getAuth();
-const { getFirestore, doc, setDoc } = require("firebase/firestore");
+const { getFirestore, doc, setDoc, collection } = require("firebase/firestore");
 const db = getFirestore();
 const User = require("../models/user/user");
 const Doctor = require("../models/Doctor/doctor");
+const Secertary = require("../models/Secertary/secertary"); 
+
 
 class FirebaseAuthController {
   async registerUser(req, res) {
@@ -61,7 +63,7 @@ class FirebaseAuthController {
       // 4. Create user in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const uid = userCredential.user.uid;
-  
+      const idToken = req.cookies.uid;
       // 5. Create the user doc in Firestore
       const userData = new User({
         uid,
@@ -73,6 +75,8 @@ class FirebaseAuthController {
         gender,
         role,
         phonenumber,
+        createdAt: new Date(),
+        
     
       });
       await setDoc(doc(db, "users", uid), userData.toFirestore());
@@ -84,9 +88,19 @@ class FirebaseAuthController {
           licenseNumber,
           description,
           nationalId,
-          patientIds: []
+          patientId: [],
+          createdAt: new Date(),
         });
         await setDoc(doc(db, "doctors", uid), doctorData.toFirestore());
+      }
+      if (role.toLowerCase() === "secertary") {
+        const secertaryData = new Secertary({
+          uid,   
+          doctorId: idToken, // optional if you want to store "doctorId"
+          createdAt: new Date(),
+          role: "Secertary",
+        });
+        await setDoc(doc(db, "Secertary", uid), secertaryData.toFirestore());
       }
   
       // 7. Optionally send email verification

@@ -5,21 +5,29 @@ class GloveController {
   async createGlove(req, res) {
     try {
       const { 
-        LastClabrated, 
-        lastSynced,
-        lastUpdated,
         model,
         productionDate,
         status,
         version,
 
       } = req.body;
+      if (
+        !model ||
+        !productionDate ||
+        !status ||
+        !version 
+        
+      ) {
+        return res.status(422).json({
+          error: "Some required fields are missing for basic user registration."
+        });
+      }
 
       // Construct a new glove object or just a plain JS object
       const gloveData = {
-        LastClabrated, 
-        lastSynced,
-        lastUpdated,
+        LastClabrated:new Date(), 
+        lastSynced:new Date(),
+        lastUpdated: new Date(),
         model,
         productionDate,
         status,
@@ -30,6 +38,7 @@ class GloveController {
 
       // Store it in Firestore with an auto-generated ID
       const docRef = await addDoc(collection(db, "Gloves"), gloveData);
+      console.log(gloveId)
 
       res.status(201).json({
         message: "Glove created successfully",

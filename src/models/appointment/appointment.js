@@ -5,7 +5,6 @@ class Appointment {
       this.appointmentID = appointmentID; // Foreign Key (User ID)
       this.patientI= patientId;
       this.doctorId = doctorId;
-      this.uid = uid;
       this.Notes = Notes;
       this.dateTime = dateTime;
       this.status = status;

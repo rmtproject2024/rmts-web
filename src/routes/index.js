@@ -9,15 +9,18 @@ const GloveController = require('../controllers/glove-controller.js');
 const GloveAssigner = require('../controllers/assign-glove.js');
 
 // Auth routes
-router.post('/api/register', firebaseAuthController.registerUser);
-router.post('/api/login', firebaseAuthController.loginUser);
-router.post('/api/logout', firebaseAuthController.logoutUser);
-router.post('/api/reset-password', firebaseAuthController.resetPassword);
-router.post('/api/createPatient', DoctorController.CreatePatient)
+router.post('/register', firebaseAuthController.registerUser);
+router.post('/login', firebaseAuthController.loginUser);
+router.post('/logout', firebaseAuthController.logoutUser);
+router.post('/reset-password', firebaseAuthController.resetPassword);
+router.post('/createPatient', DoctorController.CreatePatient);
 //posts routes
-router.get('/api/posts', verifyToken, PostsController.getPosts);
-router.post('/api/gloves', GloveController.createGlove);
-router.put('/api/gloves/assign', GloveAssigner.assignGloveToPatient);
+router.get('/posts', verifyToken, PostsController.getPosts);
+router.post('/gloves', GloveController.createGlove);
+router.put('/gloves/assign', GloveAssigner.assignGloveToPatient);
+router.get('/showPatients', (req, res) => GloveAssigner.getPatients(req, res));
+router.get('/showGloves', (req, res) => GloveAssigner.getGloves(req, res));
+
 console.log('GloveController:', GloveAssigner);
 
 

@@ -1,11 +1,12 @@
 class Patient {
-    constructor({ patientId,uid, gloveId, doctorId, emergencyContact,prescrptionId }) {
-        this.patientId = uid;
+    constructor({ patientId,uid,createdat ,gloveId, doctorId, emergencyContact,prescrptionId }) {
+        this.uid = patientId;
         this.uid = uid; // Foreign Key (User ID)
         this.gloveId = gloveId;
-        this.doctorId = doctorId, //Foreign Key(Doctor table)
-        this.emergencyContact = emergencyContact,
-        this.prescrptionId = prescrptionId 
+        this.doctorId = doctorId; //Foreign Key(Doctor table)
+        this.emergencyContact = emergencyContact;
+        this.prescrptionId = prescrptionId;
+        this.createdat = createdat; 
     }
 
     toFirestore() {
@@ -15,6 +16,7 @@ class Patient {
             doctorId: this.doctorId,
             emergencyContact: this.emergencyContact,
             prescrptionId: this.prescrptionId,
+            createdat: new Date()
         };
     }
 }
